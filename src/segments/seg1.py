@@ -1,0 +1,79 @@
+import os
+A='file:///tmp/claude-0/seg/assets/'
+CSS='''
+@font-face{font-family:GM;src:url(file:///tmp/claude-0/ill/lib/GeistMono-Regular.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:"Inter","Inter Display",sans-serif;color:#0d0d0d;-webkit-font-smoothing:antialiased}
+.seg{width:1440px;background:#fff;padding:56px 72px;position:relative;overflow:hidden}
+.m{font-family:GM,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8f}
+.v1{--r:4px;--acc:#F26A2E;--sf:#fff;--ln:#e8e8e8}.v2{--r:28px;--acc:#E46564;--sf:#f5f5f7;--ln:#ececf0}.v3{--r:999px;--acc:#E23693;--sf:#fff;--ln:#0d0d0d}
+.l{font-weight:300;letter-spacing:-.035em;line-height:1}
+.nav{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:GM;letter-spacing:.3em;font-size:14px}
+.links{display:flex;gap:32px;font-size:15px;color:#333}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 26px;font-size:15px;font-weight:500;background:#0d0d0d;color:#fff;border-radius:var(--r)}
+.v1 .btn{border-radius:4px}.v2 .btn,.v3 .btn{border-radius:999px}
+.btn.o{background:#fff;color:#0d0d0d;border:1.5px solid #d6d6d6}.btn.a{background:var(--acc)}
+.btn.s{height:36px;font-size:13px;padding:0 16px}
+.pill{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ln);font-family:GM;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#555;background:#fff}
+.pill.k{background:#0d0d0d;color:#fff;border-color:#0d0d0d}.pill.a{background:var(--acc);color:#fff;border-color:var(--acc)}
+.art{background-size:cover;background-position:center}
+.card{background:var(--sf);border-radius:var(--r)}.v1 .card{border:1px solid var(--ln)}.v2 .card{box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)}
+.v3 .card{border:1.5px solid #0d0d0d;border-radius:20px}
+.hr{height:1px;background:var(--ln)}.v3 .hr{background:#0d0d0d}
+.row{display:flex}.g{display:grid}
+h2.t{font-size:44px;font-weight:300;letter-spacing:-.03em;line-height:1.05}
+.in{height:56px;border:1.5px solid #dcdcdc;border-radius:var(--r);display:flex;align-items:center;padding:0 18px;font-size:16px;color:#888;background:#fff}
+.v3 .in{border-radius:16px;border-color:#0d0d0d}.v1 .in{border-radius:4px}.v2 .in{border-radius:16px;background:#f5f5f7;border-color:transparent}
+.lab{margin:18px 0 8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.sub{color:#6e6e73;font-size:17px;line-height:1.5}
+'''
+EV=[('14 JUN','Summer Stage','Concert','Kamloops','from $45','a0'),('21 JUN','Cup Final','Sport','Vancouver','from $38','a1'),('02 JUL','Open Mic Gala','Theatre','Victoria','from $22','a2'),('18 JUL','Tech Summit','Conference','Kelowna','from $120','a3'),('26 JUL','Lakeside Fest','Festival','Penticton','from $85','a4'),('09 AUG','Night Derby','Sport','Calgary','from $30','a5')]
+def bg(n,extra=''): return f'style="background-image:url({A}{n}.jpg);{extra}"'
+def nav(v,active='Discover',cta='Sign in'):
+    ls=''.join(f'<span {"style=color:#0d0d0d;font-weight:600" if l==active else ""}>{l}</span>' for l in ['Discover','Concerts','Sport','Theatre','Conferences'])
+    if v==2: return f'<div class="nav card" style="padding:0 12px 0 28px;height:64px;border-radius:999px"><span class="logo">UNTITLED</span><div class="links">{ls}</div><span class="btn s">{cta}</span></div>'
+    if v==3: return f'<div class="nav" style="border-bottom:1.5px solid #0d0d0d;height:64px;margin:-56px -72px 0;padding:0 72px"><span class="logo">UNTITLED</span><div class="links">{ls}</div><span class="btn s a">{cta}</span></div><div style="height:40px"></div>'
+    return f'<div class="nav" style="border-bottom:1px solid var(--ln);padding-bottom:16px;height:72px"><span class="logo">UNTITLED</span><div class="links">{ls}</div><div class="row" style="gap:10px"><span class="btn s o">Create event</span><span class="btn s">{cta}</span></div></div>'
+def evcard(v,e,big=False):
+    d,t,c,city,p,a=e; h=300 if not big else 380
+    if v==1: return f'<div><div class="art" style="height:{h}px;border-radius:2px;background-image:url({A}{a}.jpg)"></div><div class="row" style="justify-content:space-between;margin-top:14px"><span class="m">{d} · {c}</span><span class="m" style="color:#0d0d0d">{p}</span></div><div style="font-size:22px;font-weight:500;letter-spacing:-.02em;margin-top:6px">{t}</div><div class="sub" style="font-size:15px">{city}</div></div>'
+    if v==2: return f'<div class="card" style="padding:12px 12px 22px;border-radius:28px"><div class="art" style="height:{h-40}px;border-radius:20px;background-image:url({A}{a}.jpg);position:relative"><span class="pill" style="position:absolute;left:14px;top:14px;background:rgba(255,255,255,.9)">{c}</span></div><div style="padding:16px 10px 0"><div class="m">{d} · {city}</div><div style="font-size:21px;font-weight:600;letter-spacing:-.02em;margin:6px 0 10px">{t}</div><div class="row" style="justify-content:space-between;align-items:center"><span style="font-size:15px;color:#555">{p}</span><span class="btn s">Get tickets</span></div></div></div>'
+    return f'<div class="card" style="overflow:hidden;border-radius:20px"><div class="art" style="height:{h-60}px;background-image:url({A}{a}.jpg);border-bottom:1.5px solid #0d0d0d"></div><div class="row" style="padding:16px 18px;justify-content:space-between;align-items:center"><div><div style="font-size:20px;font-weight:500;letter-spacing:-.02em">{t}</div><div class="m" style="margin-top:4px">{d} · {city}</div></div><span class="pill k">{p}</span></div></div>'
+def page(html,v): return f'<div class="seg v{v}" id="seg">{html}</div>'
+# ---------- P01 landing ----------
+def hero(v):
+    if v==1: return nav(1)+f'<div class="g" style="grid-template-columns:1fr 600px;gap:56px;margin-top:64px;align-items:end"><div><div class="m">General events · Concerts · Sport · Theatre</div><div class="l" style="font-size:112px;margin:24px 0 32px">Every stage,<br>one ticket<br>away.</div><div class="row" style="gap:12px"><span class="btn a">Browse events</span><span class="btn o">Sell tickets</span></div></div><div class="art" style="height:520px;border-radius:2px;background-image:url({A}w_ember.jpg)"></div></div><div class="hr" style="margin-top:56px"></div><div class="g" style="grid-template-columns:repeat(4,1fr);padding-top:20px">'+''.join(f'<div><div class="m">{a}</div><div style="font-size:30px;font-weight:300;margin-top:6px">{b}</div></div>' for a,b in [('Events live','1,284'),('Tickets sold','86,402'),('Cities','37'),('Organisers','412')])+'</div>'
+    if v==2: return nav(2)+f'<div style="text-align:center;margin-top:72px"><span class="pill">New · Seat maps for every venue</span><div class="l" style="font-size:96px;margin:24px auto 20px;max-width:1000px">Find your next night out</div><div class="sub" style="font-size:20px">Concerts, sport, theatre and conferences. One place to browse, book and keep your tickets.</div></div><div class="card row" style="margin:40px auto 0;width:960px;padding:10px 10px 10px 32px;height:84px;align-items:center;border-radius:999px;justify-content:space-between"><div><div class="m">What</div><div style="font-size:16px">Any event</div></div><div class="hr" style="width:1px;height:40px"></div><div><div class="m">Where</div><div style="font-size:16px">Kamloops, BC</div></div><div class="hr" style="width:1px;height:40px"></div><div><div class="m">When</div><div style="font-size:16px">This month</div></div><span class="btn a" style="height:64px;padding:0 40px">Search</span></div><div class="art" style="height:340px;border-radius:32px;margin-top:48px;background-image:url({A}w_peach.jpg)"></div>'
+    return nav(3)+f'<div class="g" style="grid-template-columns:1fr 520px;gap:40px;align-items:center"><div><div class="l" style="font-size:184px">Live.<br>Nearby.<br><span style="color:var(--acc)">Now.</span></div><div class="row" style="gap:12px;margin-top:40px;align-items:center"><span class="btn">Browse events</span><span class="m">1,284 events this month</span></div></div><div class="art" style="height:520px;width:520px;border-radius:50%;background-image:url({A}sph_mag.jpg)"></div></div>'
+def events(v):
+    head=lambda t,s:f'<div class="row" style="justify-content:space-between;align-items:end;margin-bottom:36px"><div><div class="m">{s}</div><h2 class="t" style="margin-top:10px">{t}</h2></div><span class="btn o">View all</span></div>'
+    if v==3:
+        rows=''.join(f'<div style="border-top:1.5px solid #0d0d0d;padding:22px 0;display:grid;grid-template-columns:140px 90px 1fr 200px 160px 60px;align-items:center;gap:20px"><div class="l" style="font-size:40px">{e[0][:2]}</div><div class="m">{e[0][3:]}</div><div style="font-size:26px;font-weight:400;letter-spacing:-.02em">{e[1]}</div><div class="m">{e[2]} · {e[3]}</div><div>{e[4]}</div><div class="art" style="width:56px;height:56px;border-radius:50%;background-image:url({A}{e[5]}.jpg)"></div></div>' for e in EV)
+        return head('Happening soon','Featured')+rows+'<div style="border-top:1.5px solid #0d0d0d"></div>'
+    cols=3
+    return head('Happening soon','Featured')+f'<div class="g" style="grid-template-columns:repeat(3,1fr);gap:{"36px 28px" if v==1 else "28px"}">'+''.join(evcard(v,e) for e in EV[:6 if v==1 else 3])+'</div>'
+def cats(v):
+    C=[('Concerts','428'),('Sport','216'),('Theatre','137'),('Conferences','94'),('Festivals','61')]
+    h='<div class="m">Browse by type</div><h2 class="t" style="margin:10px 0 40px">Whatever the occasion</h2>'
+    if v==1: return h+'<div class="g" style="grid-template-columns:repeat(5,1fr);border-top:1px solid var(--ln)">'+''.join(f'<div style="padding:28px 20px 28px 0;border-right:1px solid var(--ln)"><div class="m">0{i+1}</div><div style="font-size:30px;font-weight:300;margin:60px 0 6px;letter-spacing:-.02em">{n}</div><div class="m">{c} events</div></div>' for i,(n,c) in enumerate(C))+'</div>'
+    if v==2: return h+'<div class="g" style="grid-template-columns:repeat(5,1fr);gap:16px">'+''.join(f'<div class="card" style="padding:20px;height:240px;display:flex;flex-direction:column;justify-content:space-between"><div class="art" style="width:56px;height:56px;border-radius:50%;background-image:url({A}a{i}.jpg)"></div><div><div style="font-size:21px;font-weight:600;letter-spacing:-.02em">{n}</div><div class="sub" style="font-size:14px">{c} events</div></div></div>' for i,(n,c) in enumerate(C))+'</div>'
+    return h+''.join(f'<div class="row" style="border-top:1.5px solid #0d0d0d;padding:14px 0;justify-content:space-between;align-items:center"><div class="l" style="font-size:72px">{n}</div><div class="row" style="gap:20px;align-items:center"><span class="m">{c} events</span><span class="pill k">→</span></div></div>' for n,c in C)+'<div style="border-top:1.5px solid #0d0d0d"></div>'
+def how(v):
+    S=[('Find','Browse by date, city or type.'),('Choose','Pick seats on a live map or a ticket tier.'),('Pay','One checkout. Hold timer keeps your seats.'),('Go','Tickets live in your wallet, ready to scan.')]
+    h='<div class="m">How it works</div><h2 class="t" style="margin:10px 0 48px">Four steps, no friction</h2>'
+    if v==1: return h+'<div class="g" style="grid-template-columns:repeat(4,1fr);gap:0">'+''.join(f'<div style="border-top:1px solid #0d0d0d;padding:20px 28px 0 0"><div class="m">0{i+1}</div><div style="font-size:28px;font-weight:300;margin:36px 0 10px">{a}</div><div class="sub" style="font-size:16px">{b}</div></div>' for i,(a,b) in enumerate(S))+'</div>'
+    if v==2: return h+'<div class="g" style="grid-template-columns:repeat(4,1fr);gap:16px">'+''.join(f'<div class="card" style="padding:28px"><div class="art" style="width:56px;height:56px;border-radius:50%;background-image:url({A}a{[1,2,4,0][i]}.jpg)"></div><div style="font-size:24px;font-weight:600;margin:80px 0 8px;letter-spacing:-.02em">{a}</div><div class="sub" style="font-size:15px">{b}</div></div>' for i,(a,b) in enumerate(S))+'</div>'
+    return h+'<div style="position:relative"><div style="position:absolute;top:11px;left:0;right:0;height:1.5px;background:#0d0d0d"></div><div class="g" style="grid-template-columns:repeat(4,1fr);gap:24px">'+''.join(f'<div style="position:relative"><div style="width:24px;height:24px;border-radius:50%;background:{"var(--acc)" if i==0 else "#fff"};border:1.5px solid #0d0d0d"></div><div class="l" style="font-size:56px;margin:36px 0 12px">{a}</div><div class="sub" style="font-size:16px">{b}</div></div>' for i,(a,b) in enumerate(S))+'</div></div>'
+def orgcta(v):
+    st=[('4,812','Tickets sold per event, on average'),('98%','Payouts on time'),('2 min','To publish an event')]
+    if v==1: return f'<div class="g" style="grid-template-columns:1fr 1fr;gap:0;border-top:1px solid #0d0d0d"><div style="padding:40px 56px 40px 0"><div class="m">For organisers</div><div class="l" style="font-size:64px;margin:20px 0 24px">Sell out,<br>on your terms.</div><div class="sub" style="max-width:420px">Custom ticket types, live sales and payouts in one dashboard.</div><div class="btn a" style="margin-top:32px">Start selling</div></div><div class="art" style="margin:40px 0;border-radius:2px;background-image:url({A}tall_peach.jpg);height:420px;background-position:center 30%"></div></div>'
+    if v==2: return f'<div class="art" style="border-radius:36px;padding:72px;height:420px;background-image:url({A}w_mag.jpg);display:flex;flex-direction:column;justify-content:space-between"><div class="l" style="font-size:64px;color:#fff;max-width:700px">Host your event with Untitled</div><div class="row" style="justify-content:space-between;align-items:end"><div class="row" style="gap:12px"><span class="btn" style="background:#fff;color:#0d0d0d">Start selling</span><span class="btn" style="background:rgba(255,255,255,.2)">See pricing</span></div><span class="m" style="color:#fff">Free to start</span></div></div>'
+    return '<div class="m">For organisers</div><div class="g" style="grid-template-columns:repeat(3,1fr);gap:0;margin-top:28px">'+''.join(f'<div style="border-top:1.5px solid #0d0d0d;padding:20px 24px 0 0"><div class="l" style="font-size:120px;color:{"var(--acc)" if i==0 else "#0d0d0d"}">{a}</div><div class="sub" style="margin-top:12px;font-size:16px">{b}</div></div>' for i,(a,b) in enumerate(st))+'</div><div class="btn" style="margin-top:40px">Start selling</div>'
+def footer(v):
+    cols=[('Discover',['Concerts','Sport','Theatre','Conferences']),('Organisers',['Create event','Ticket types','Payouts','Pricing']),('Company',['About','Help centre','Terms','Privacy'])]
+    c=''.join(f'<div><div class="m">{h}</div>'+''.join(f'<div style="font-size:15px;margin-top:12px">{x}</div>' for x in xs)+'</div>' for h,xs in cols)
+    if v==1: return f'<div style="border-top:1px solid #0d0d0d;padding-top:36px" class="g"><div class="g" style="grid-template-columns:1.4fr 1fr 1fr 1fr"><div><span class="logo">UNTITLED</span><div class="sub" style="font-size:15px;margin-top:14px;max-width:260px">Events and tickets, simply.</div></div>{c}</div><div class="hr" style="margin:40px 0 18px"></div><div class="row m" style="justify-content:space-between"><span>© 2026 Untitled</span><span>Kamloops · BC · Canada</span></div></div>'
+    if v==2: return f'<div class="card" style="padding:56px"><div class="g" style="grid-template-columns:1.4fr 1fr 1fr 1fr"><div><span class="logo">UNTITLED</span><div class="row" style="margin-top:24px;gap:8px"><div class="in" style="width:260px;height:48px;border-radius:999px;background:#fff">Your email</div><span class="btn">Join</span></div></div>{c}</div></div>'
+    return f'<div style="border-top:1.5px solid #0d0d0d;padding-top:24px"><div class="g" style="grid-template-columns:1.4fr 1fr 1fr 1fr">{"<div></div>"}{c}</div><div class="l" style="font-size:300px;letter-spacing:-.06em;margin:40px 0 -50px">untitled</div></div>'
